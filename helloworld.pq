@@ -10,17 +10,11 @@ shared helloworld.Contents = () =>
         a;
 NavTable = (message as text) as table =>
     let
-        entitiesAsTable = Table.FromList(RootEntities, Splitter.SplitByNothing()),
-        rename = Table.RenameColumns(entitiesAsTable, {{"Column1", "Name"}}),
-        // Add Data as a calculated column
-        withData = Table.AddColumn(rename, "Data", each helloworld),
-        // Add ItemKind and ItemName as fixed text values
-        withItemKind = Table.AddColumn(withData, "ItemKind", each "Table", type text),
-        withItemName = Table.AddColumn(withItemKind, "ItemName", each "Table", type text),
-        // Indicate that the node should not be expandable
-        withIsLeaf = Table.AddColumn(withItemName, "IsLeaf", each true, type logical),
-        // Generate the nav table
-        navTable = Table.ToNavigationTable(withIsLeaf, {"Name"}, "Name", "Data", "ItemKind", "ItemName", "IsLeaf")
+        source = #table({"Name", "Data", "ItemKind", "ItemName", "IsLeaf"}, {
+            { "helloworld1", helloworld1(message), "Table", "Table", true },
+            { "helloworld2", helloworld2(message), "Table", "Table", true }
+        }),
+        navTable = Table.ToNavigationTable(source, {"Name"}, "Name", "Data", "ItemKind", "ItemName", "IsLeaf")
     in
         navTable;
 RootEntities = {
@@ -45,6 +39,7 @@ helloworld2 = (message as text) as table =>
         #"Changed Type";
 // Data Source Kind description
 helloworld = [
+    TestConnection = (dataSourcePath) => { "helloworld.Contents" },
     Authentication = [
         Anonymous = []
     ]
