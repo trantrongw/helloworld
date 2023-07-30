@@ -3,9 +3,9 @@
 section helloworld;
 BaseUrl = "https://services.odata.org/v4/TripPinService/";
 [DataSource.Kind="helloworld", Publish="helloworld.Publish"]
-shared helloworld.Contents = () =>
+shared helloworld.Contents = (message as text) =>
     let
-        a = NavTable(BaseUrl)
+        a = NavTable(message)
     in
         a;
 NavTable = (message as text) as table =>
@@ -39,7 +39,13 @@ helloworld2 = (message as text) as table =>
         #"Changed Type";
 // Data Source Kind description
 helloworld = [
-    TestConnection = (dataSourcePath) => { "helloworld.Contents" },
+    TestConnection = (dataSourcePath) => 
+    let
+        message = "test"
+    in
+        message
+    
+    ,
     Authentication = [
         Anonymous = []
     ]
